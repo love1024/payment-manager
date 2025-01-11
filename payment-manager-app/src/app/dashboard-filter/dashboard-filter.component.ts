@@ -43,7 +43,7 @@ export class DashboardFilterComponent implements OnInit {
     this.search.valueChanges
       .pipe(debounceTime(250), takeUntilDestroyed(this.destroyRef))
       .subscribe(val => {
-        const value = val?.trim().toLowerCase();
+        this.emitChange();
       });
   }
 
@@ -54,7 +54,6 @@ export class DashboardFilterComponent implements OnInit {
     this.status.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(val => {
-        const value = val?.trim().toLowerCase();
         this.emitChange();
       });
   }
