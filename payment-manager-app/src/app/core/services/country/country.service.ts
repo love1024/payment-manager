@@ -11,6 +11,7 @@ export class CountryService {
 
   // Cache results
   private countries: CountryData[] = [];
+  private stateMap = new Map<string, string[]>();
   private citiesMap = new Map<string, string[]>(); // Key here is country-state if state is avilable, otherwise country
   private currency = new Map<string, string>();
 
@@ -29,7 +30,7 @@ export class CountryService {
   }
 
   getStates(country: string): Observable<string[]> {
-    const states = this.citiesMap.get(country);
+    const states = this.stateMap.get(country);
     if (states) {
       return of(states);
     }
@@ -40,7 +41,7 @@ export class CountryService {
       .pipe(
         map(r => {
           const data = r.data.states.map(d => d.name);
-          this.citiesMap.set(country, data);
+          this.stateMap.set(country, data);
           return data;
         })
       );
