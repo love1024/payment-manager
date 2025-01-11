@@ -2,6 +2,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { GetPaymentsDto, PaymentDto } from '@app/core/dto';
 import { Observable } from 'rxjs';
+import { Cacheable } from 'typescript-cacheable';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
@@ -14,6 +15,7 @@ export class PaymentService {
     return this.http.post<void>(`${this.BASE_API_URL}/payments`, payment);
   }
 
+  @Cacheable()
   getPayments(
     page = 1,
     per_page = 50,
@@ -51,6 +53,7 @@ export class PaymentService {
     );
   }
 
+  @Cacheable()
   downloadEvidenceFile(evidenceFileId: string): Observable<HttpResponse<Blob>> {
     const url = `${this.BASE_API_URL}/payments/evidence/${evidenceFileId}`;
     return this.http.get(url, { responseType: 'blob', observe: 'response' });
