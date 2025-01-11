@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterEvent, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EventService } from './core/services';
@@ -14,8 +14,12 @@ import { AppEvent } from './core/constants';
 export class AppComponent {
   loading = signal(false);
   private readonly eventService = inject(EventService);
+  private readonly router = inject(Router);
 
   constructor() {
+    this.router.events.subscribe(routerEvent => {
+      this.checkRouterEvent(routerEvent as RouterEvent);
+    });
     this.subscribeToAppEvents();
   }
 
@@ -30,5 +34,17 @@ export class AppComponent {
           break;
       }
     });
+  }
+
+  private checkRouterEvent(routerEvent: RouterEvent): void {
+    if (routerEvent instanceof NavigationStart) {
+      this.loading.set(true);
+    } else if (
+      routerEvent instanceof NavigationEnd ||
+      routerEvent instanceof NavigationCancel ||
+      routerEvent instanceof NavigationError
+    ) {
+      this.loading.set(false);
+    }
   }
 }
