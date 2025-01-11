@@ -1,0 +1,26 @@
+<div class="flex items-center gap-8">
+  <h4>Payments</h4>
+  <mat-form-field class="w-1/5">
+    <mat-label>Search</mat-label>
+    <input
+      matInput
+      name="search"
+      [formControl]="search"
+      placeholder="Ex. Peter"
+      #input />
+
+    <button mat-icon-button matSuffix (click)="onClearFilter()">
+      <mat-icon matSuffix class="cursor-pointer">close</mat-icon>
+    </button>
+  </mat-form-field>
+  <mat-form-field appearance="outline" hideRequiredMarker="true">
+    <mat-label>Payment Status</mat-label>
+    <select matNativeControl [formControl]="status">
+      <option value="">All</option>
+      <option value="overdue">Overdue</option>
+      <option value="pending">Pending</option>
+      <option value="due_now">Due now</option>
+      <option value="completed">Completed</option>
+    </select>
+  </mat-form-field>
+</div>

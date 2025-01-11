@@ -1,0 +1,217 @@
+<form [formGroup]="form" class="w-1/2 mx-auto mt-12">
+  <h4>Add a new Payment</h4>
+  <hr class="mb-4" />
+  <div class="flex gap-8 mb-4">
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      hideRequiredMarker="true">
+      <mat-label>First Name</mat-label>
+      <input formControlName="firstName" matInput />
+      <mat-error>{{
+        errors[form.controls.firstName.errors | firstKey]
+      }}</mat-error>
+    </mat-form-field>
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      hideRequiredMarker="true">
+      <mat-label>Last Name</mat-label>
+      <input formControlName="lastName" matInput />
+      <mat-error>{{
+        errors[form.controls.lastName.errors | firstKey]
+      }}</mat-error>
+    </mat-form-field>
+  </div>
+  <div class="flex gap-8 mb-4">
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      hideRequiredMarker="true">
+      <mat-label>Email Address</mat-label>
+      <input formControlName="email" matInput />
+      <mat-error>{{ errors[form.controls.email.errors | firstKey] }}</mat-error>
+    </mat-form-field>
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      hideRequiredMarker="true">
+      <mat-label>Phone Number</mat-label>
+      <input formControlName="phone" matInput placeholder="Ex. +16166697999" />
+      <mat-error>{{ errors[form.controls.phone.errors | firstKey] }}</mat-error>
+    </mat-form-field>
+  </div>
+  <div class="flex gap-8 mb-4">
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      hideRequiredMarker="true">
+      <mat-label>Address Line 1</mat-label>
+      <input formControlName="address1" matInput placeholder="Street address" />
+      <mat-error>{{
+        errors[form.controls.address1.errors | firstKey]
+      }}</mat-error>
+    </mat-form-field>
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      hideRequiredMarker="true">
+      <mat-label>Address Line 2</mat-label>
+      <input
+        formControlName="address2"
+        matInput
+        placeholder="Apartment, unit, etc" />
+      <mat-error>{{
+        errors[form.controls.address1.errors | firstKey]
+      }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="flex gap-8 mb-4">
+    <mat-form-field
+      class="w-full"
+      appearance="outline"
+      hideRequiredMarker="true">
+      <mat-label>Country</mat-label>
+      <input
+        type="text"
+        placeholder="Pick one"
+        aria-label="country"
+        matInput
+        formControlName="country"
+        autocomplete="none"
+        [matAutocomplete]="countryAuto" />
+      <mat-autocomplete #countryAuto="matAutocomplete">
+        @for (country of filteredCountries(); track country.Iso2) {
+          <mat-option [value]="country.name">{{ country.name }}</mat-option>
+        }
+      </mat-autocomplete>
+      <mat-error>{{
+        errors[form.controls.country.errors | firstKey]
+      }}</mat-error>
+    </mat-form-field>
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      hideRequiredMarker="true">
+      <mat-label>Postal Code</mat-label>
+      <input formControlName="postalCode" matInput />
+      <mat-error>{{
+        errors[form.controls.postalCode.errors | firstKey]
+      }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="flex gap-8 mb-4">
+    <mat-form-field
+      class="w-full"
+      appearance="outline"
+      hideRequiredMarker="true">
+      <mat-label>State/Province</mat-label>
+      <input
+        type="text"
+        placeholder="Pick one"
+        aria-label="state"
+        matInput
+        formControlName="state"
+        [matAutocomplete]="stateAuto"
+        autocomplete="none" />
+      <mat-autocomplete #stateAuto="matAutocomplete">
+        @for (state of filteredStates(); track state) {
+          <mat-option [value]="state">{{ state }}</mat-option>
+        }
+      </mat-autocomplete>
+      <mat-error>{{ errors[form.controls.state.errors | firstKey] }}</mat-error>
+    </mat-form-field>
+    <mat-form-field
+      class="w-full"
+      appearance="outline"
+      hideRequiredMarker="true">
+      <mat-label>City</mat-label>
+      <input
+        type="text"
+        placeholder="Pick one"
+        aria-label="city"
+        matInput
+        formControlName="city"
+        autocomplete="none"
+        [matAutocomplete]="countryCity" />
+      <mat-autocomplete #countryCity="matAutocomplete">
+        @for (city of filteredCities(); track city) {
+          <mat-option [value]="city">{{ city }}</mat-option>
+        }
+      </mat-autocomplete>
+      <mat-error>{{ errors[form.controls.city.errors | firstKey] }}</mat-error>
+    </mat-form-field>
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      hideRequiredMarker="true">
+      <mat-label>Currency</mat-label>
+      <input formControlName="currency" matInput />
+      <mat-error>{{
+        errors[form.controls.currency.errors | firstKey]
+      }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="flex gap-8 mb-4">
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      hideRequiredMarker="true">
+      <mat-label>Due Date</mat-label>
+      <input
+        formControlName="dueDate"
+        matInput
+        [matDatepicker]="picker"
+        placeholder="YYYY-MM-DD" />
+
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-hint>YYYY-MM-DD</mat-hint>
+      <mat-error>{{
+        errors[form.controls.dueDate.errors | firstKey]
+      }}</mat-error>
+    </mat-form-field>
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      hideRequiredMarker="true">
+      <mat-label>Due Amount</mat-label>
+      <input type="number" formControlName="dueAmount" matInput />
+      <mat-error>{{
+        errors[form.controls.dueAmount.errors | firstKey]
+      }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="flex gap-8">
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      hideRequiredMarker="true">
+      <mat-label>Discount Percentage</mat-label>
+      <input type="number" formControlName="discountPct" matInput />
+      <mat-error>{{
+        errors[form.controls.discountPct.errors | firstKey]
+      }}</mat-error>
+    </mat-form-field>
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      hideRequiredMarker="true">
+      <mat-label>Tax Percentage</mat-label>
+      <input type="number" formControlName="taxPct" matInput />
+      <mat-error>{{
+        errors[form.controls.taxPct.errors | firstKey]
+      }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="w-full flex justify-end">
+    <button mat-flat-button (click)="onSavePayment()">Save</button>
+  </div>
+</form>

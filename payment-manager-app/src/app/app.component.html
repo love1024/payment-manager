@@ -1,0 +1,7 @@
+<app-header />
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+<main class="px-24 pt-8">
+  <router-outlet />
+</main>

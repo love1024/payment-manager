@@ -1,0 +1,252 @@
+<!-- <div class="flex items-center gap-8">
+  <h4>Payments</h4>
+  <mat-form-field class="w-1/5">
+    <mat-label>Search</mat-label>
+    <input
+      matInput
+      [formControl]="filterValue"
+      placeholder="Ex. Peter"
+      #input />
+
+    <button mat-icon-button matSuffix (click)="onClearFilter()">
+      <mat-icon matSuffix class="cursor-pointer">close</mat-icon>
+    </button>
+  </mat-form-field>
+  <mat-form-field appearance="outline" hideRequiredMarker="true">
+    <mat-label>Payment Status</mat-label>
+    <select matNativeControl required formControlName="status">
+      <option value="">All</option>
+      <option value="overdue">Overdue</option>
+      <option value="pending">Pending</option>
+      <option value="due_now">Due now</option>
+      <option value="completed">Completed</option>
+    </select>
+    <mat-error>{{
+      errors[updateForm.controls.status.errors | firstKey]
+    }}</mat-error>
+  </mat-form-field>
+</div> -->
+<app-dashboard-filter (changed)="onFilterChange($event)" />
+
+<div>
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="fullName">
+        <th mat-header-cell *matHeaderCellDef>Full Name</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.fullName }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="contact">
+        <th mat-header-cell *matHeaderCellDef>Contact</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="flex items-center mb-0">
+            <mat-icon matSuffix class="text-sm">email</mat-icon>
+            <span>{{ row.email }}</span>
+          </span>
+          <span class="flex items-center">
+            <mat-icon matSuffix class="text-sm">phone</mat-icon>
+            <span>{{ row.phone }}</span>
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="address">
+        <th mat-header-cell *matHeaderCellDef>Address</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.address }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="addedDate">
+        <th mat-header-cell *matHeaderCellDef>Added Date</th>
+        <td mat-cell *matCellDef="let row">
+          <p>{{ row.addedDate | date: 'short' }}</p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalDue">
+        <th mat-header-cell *matHeaderCellDef>Total Due</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.totalDue | currency: row.currency }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="dueDate">
+        <th mat-header-cell *matHeaderCellDef>Due Date</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.dueDate | date }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="paymentStatus">
+        <th mat-header-cell *matHeaderCellDef>Payment Status</th>
+        <td mat-cell *matCellDef="let row">
+          <span
+            [ngClass]="{
+              'text-red-500': row.paymentStatus === paymentStatus.OVERDUE,
+              'text-amber-500': row.paymentStatus === paymentStatus.DUE_NOW,
+              'text-green-500': row.paymentStatus === paymentStatus.COMPLETED,
+            }"
+            >{{ row.paymentStatus.split('_').join(' ') | titlecase }}</span
+          >
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="evidence">
+        <th mat-header-cell *matHeaderCellDef>Evidence File</th>
+        <td mat-cell *matCellDef="let row">
+          @if (row.evidenceId) {
+            <p
+              matTooltip="Download Evidence File"
+              class="text-blue-400 underline cursor-pointer"
+              (click)="downloadEvidenceFile(row.evidenceId)">
+              Download Evidence
+            </p>
+          } @else {
+            <button
+              mat-button
+              matTooltip="Upload Evidence"
+              (click)="selectFile(row._id)">
+              Upload
+            </button>
+            <!-- <i class="ri-image-line"></i> -->
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Action</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="flex gap-4">
+            <mat-icon
+              class="text-sm cursor-pointer"
+              aria-hidden="false"
+              aria-label="Edit Payment"
+              fontIcon="edit"
+              matTooltip="Edit Payment"
+              (click)="onEditPayment(row._id)"></mat-icon>
+            <mat-icon
+              class="text-sm cursor-pointer"
+              aria-hidden="false"
+              aria-label="Delete Payment"
+              fontIcon="delete"
+              matTooltip="Delete Payment"
+              (click)="onDeletePayment(row._id)"></mat-icon>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <!-- Row shown when there is no matching data. -->
+      <!-- <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">
+          No data matching the filter "{{ input.value }}"
+        </td>
+      </tr> -->
+    </table>
+  </div>
+
+  <mat-paginator
+    class="border-t"
+    showFirstLastButtons
+    [length]="totalItems()"
+    [pageSizeOptions]="[50, 100, 150]"
+    [pageSize]="pageSize()"
+    [pageIndex]="currentPage()"
+    (page)="onPageChange($event)"
+    aria-label="Select page of users"></mat-paginator>
+</div>
+
+<input
+  type="file"
+  id="fileUploader"
+  #fileUploader
+  name="image"
+  accept=".pdf,.png,.jpg"
+  (change)="uploadFile($event)"
+  (click)="onFileUploadClick($event)" />
+
+<ng-template #editDialog>
+  <h2 mat-dialog-title>Edit Payment</h2>
+  <mat-dialog-content>
+    <form [formGroup]="updateForm" class="pt-4">
+      <mat-form-field
+        appearance="outline"
+        class="w-full mb-2"
+        hideRequiredMarker="true">
+        <mat-label>Due Date</mat-label>
+        <input
+          formControlName="dueDate"
+          matInput
+          [matDatepicker]="picker"
+          placeholder="YYYY-MM-DD" />
+
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error>{{
+          errors[updateForm.controls.dueDate.errors | firstKey]
+        }}</mat-error>
+      </mat-form-field>
+      <mat-form-field
+        appearance="outline"
+        class="w-full"
+        hideRequiredMarker="true">
+        <mat-label>Due Amount</mat-label>
+        <input type="number" formControlName="dueAmount" matInput />
+        <mat-error>{{
+          errors[updateForm.controls.dueAmount.errors | firstKey]
+        }}</mat-error>
+      </mat-form-field>
+      <mat-form-field
+        appearance="outline"
+        class="w-full"
+        hideRequiredMarker="true">
+        <mat-label>Payment Status</mat-label>
+        <select matNativeControl required formControlName="status">
+          <option value="overdue">Overdue</option>
+          <option value="pending">Pending</option>
+          <option value="due_now">Due now</option>
+          <option value="completed">Completed</option>
+        </select>
+        <mat-error>{{
+          errors[updateForm.controls.status.errors | firstKey]
+        }}</mat-error>
+      </mat-form-field>
+      <p class="text-red-700">{{ errors[updateForm.errors | firstKey] }}</p>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button
+      mat-button
+      mat-dialog-close
+      cdkFocusInitial
+      [disabled]="updateForm.invalid"
+      (click)="onDialogConfirmation()">
+      Update
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<ng-template #deleteDialog>
+  <h2 mat-dialog-title>Delete Payment?</h2>
+  <mat-dialog-content>
+    <p>Are you sure want to delete this payment?</p>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button
+      mat-button
+      mat-dialog-close
+      cdkFocusInitial
+      (click)="onDialogConfirmation()">
+      Delete
+    </button>
+  </mat-dialog-actions>
+</ng-template>
