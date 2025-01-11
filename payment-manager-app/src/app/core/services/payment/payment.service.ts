@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
-  private BASE_API_URL = 'http://0.0.0.0:8080';
+  private BASE_API_URL = 'http://34.69.128.141:8080';
   private http = inject(HttpClient);
 
   constructor() {}
